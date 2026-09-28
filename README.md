@@ -1,6 +1,18 @@
 ﻿# Hunar Souq — Phase 1
 
-A warm, mobile-first community talent marketplace foundation. Built with Next.js 16 App Router, TypeScript, Tailwind CSS 4, shadcn/ui (Radix), and Supabase. Zod, React Hook Form, and their resolver are installed for Phase 2 forms.
+**Current phase: Phase 2 — accounts and profiles.**
+
+Phase 2 adds Supabase authentication, protected account pages, a six-step profile editor, private image uploads, a status dashboard, and database-enforced ownership/review rules.
+
+**Start with [the Phase 2 setup and handoff](docs/phase-2.md)** for the new migration, Google/email configuration, complete file inventory, security design, and live acceptance checklist. Apply both SQL migrations in order. The same three environment variables are used; there is no service-role key in the app.
+
+Run `npm run test:unit` for schema and PostgreSQL security tests, in addition to the build, lint, typecheck, and browser checks below. Real email/OAuth/hosted Storage verification requires a configured Supabase project.
+
+The Phase 1 notes below are retained as implementation history; the Phase 2 handoff supersedes their account/profile limitations.
+
+## Phase 1 foundation
+
+A warm, mobile-first community talent marketplace foundation. Built with Next.js 16 App Router, TypeScript, Tailwind CSS 4, shadcn/ui (Radix), and Supabase. Zod, React Hook Form, and their resolver are installed for forms.
 
 ## Run locally
 
@@ -68,4 +80,4 @@ The pottery photograph is sourced from [Unsplash](https://images.unsplash.com/ph
 
 Framework setup follows the [Next.js installation guide](https://nextjs.org/docs/app/getting-started/installation) and [Supabase SSR client guide](https://supabase.com/docs/guides/auth/server-side/creating-a-client).
 
-Stop after this phase. Start Phase 2 only after the user says **continue**.
+Phase 2 was authorized and implemented. Start Phase 3 only after the user says **continue**.

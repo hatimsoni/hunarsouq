@@ -42,7 +42,7 @@ test("FAQs reveal answers and placeholder pages are honest", async ({
     "Your hunar belongs here.",
   );
   await expect(
-    page.getByText("Registration is coming soon.", { exact: false }),
+    page.getByText("Account services are not connected yet.", { exact: false }),
   ).toBeVisible();
 });
 

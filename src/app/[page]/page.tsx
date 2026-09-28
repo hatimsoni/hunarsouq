@@ -36,7 +36,7 @@ const pages: Record<
     sections: [
       [
         "What this preview collects",
-        "This foundation does not accept account registrations, contact submissions, or payments. No analytics have been added. Hosting providers may process standard request logs to operate the site.",
+        "When account services are configured, we store your email and authentication details with Supabase, along with the profile information and images you choose to submit. Draft and pending profiles are private. No analytics or payments have been added. Hosting providers may process standard request logs.",
       ],
       [
         "Our planned approach",
@@ -52,7 +52,7 @@ const pages: Record<
     sections: [
       [
         "This preview",
-        "Hunar Souq is under construction. Registration, public listings, learning, and payments are not yet available. Content describes the planned community.",
+        "Hunar Souq is being built in stages. Accounts and profile submissions are available when account services are connected. Public listings, learning, and payments are not yet open.",
       ],
       [
         "Community expectations",
@@ -91,29 +91,6 @@ const pages: Record<
       [
         "In the meantime",
         "Explore our community guidelines and the answers on the homepage to learn how Hunar Souq will work.",
-      ],
-    ],
-  },
-  signup: {
-    title: "Your hunar belongs here.",
-    intro:
-      "Registration is coming soon. We’re preparing a welcoming home for your skills.",
-    preview: true,
-    sections: [
-      [
-        "What comes next",
-        "Create your account, share your work, and submit your profile for human review. Account creation will open in the next stage of the platform.",
-      ],
-    ],
-  },
-  login: {
-    title: "A warm welcome awaits.",
-    intro: "Member sign-in is coming soon.",
-    preview: true,
-    sections: [
-      [
-        "We’re getting ready",
-        "Accounts are not open in this preview. Return to the homepage to discover what’s taking shape.",
       ],
     ],
   },

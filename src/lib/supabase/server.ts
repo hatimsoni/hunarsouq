@@ -18,7 +18,7 @@ export async function createClient() {
             cookieStore.set(name, value, options),
           );
         } catch {
-          /* Server Components cannot write cookies. Auth refresh is added in Phase 2. */
+          /* Read-only Server Components rely on src/proxy.ts to persist refreshed sessions. */
         }
       },
     },
