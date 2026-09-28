@@ -9,7 +9,7 @@ export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
   const protectedRoute =
     request.nextUrl.pathname === "/account" ||
-    request.nextUrl.pathname.startsWith("/account/");
+    request.nextUrl.pathname.startsWith("/account/") || request.nextUrl.pathname === '/admin' || request.nextUrl.pathname.startsWith('/admin/');
   const login = () => {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
@@ -50,6 +50,7 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/account/:path*",
+    "/admin/:path*",
     "/login",
     "/signup",
     "/forgot-password",

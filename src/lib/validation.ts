@@ -181,5 +181,6 @@ export const emptyProfile: ProfileInput = {
   portfolio_images: [],
 };
 export function safeNext(value: string | null | undefined) {
+  if(value==='/admin'||value?.startsWith('/admin/')) return '/admin';
   return value === "/account/submit" ? value : "/account";
 }
