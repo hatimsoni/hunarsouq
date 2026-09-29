@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { CategoryBrowser } from "@/components/category-browser";
 import { FAQ } from "@/components/faq";
 import { getHomeData } from "@/lib/home";
+import { RecentMembers } from "@/components/recent-members";
 
 const promises = [
   {
@@ -103,9 +104,11 @@ export default async function Home() {
               <ShieldCheck size={20} className="shrink-0 text-primary" />
               <span>
                 <strong className="font-semibold text-foreground">
-                  0 verified members
+                  {data.verifiedMembers === null
+                    ? "A community taking shape"
+                    : `${data.verifiedMembers.toLocaleString()} verified members`}
                 </strong>{" "}
-                · A new community, growing together.
+                · Growing together.
               </span>
             </div>
           </div>
@@ -172,7 +175,10 @@ export default async function Home() {
       </div>
       <Section id="skills">
         <Container>
-          <CategoryBrowser categories={data.categories} />
+          <CategoryBrowser
+            categories={data.categories}
+            memberCounts={data.memberCounts}
+          />
           {data.source === "unavailable" && (
             <p
               role="status"
@@ -251,23 +257,43 @@ export default async function Home() {
       <Container>
         <div className="grid grid-cols-2 gap-y-7 rounded-2xl bg-[#eaeedf] px-5 py-9 md:grid-cols-4">
           {[
-            ["0", "Verified members"],
-            ["0", "Local businesses"],
+            [
+              data.verifiedMembers === null
+                ? "—"
+                : data.verifiedMembers.toLocaleString(),
+              "Verified members",
+            ],
+            [
+              data.verifiedBusinesses === null
+                ? "—"
+                : data.verifiedBusinesses.toLocaleString(),
+              "Local businesses",
+            ],
             [String(data.categories.length), "Ways to share your hunar"],
-            ["0", "Courses to grow with"],
+            [
+              data.verifiedCourses === null
+                ? "—"
+                : data.verifiedCourses.toLocaleString(),
+              "Courses to grow with",
+            ],
           ].map(([number, label], i) => (
             <div
               key={label}
               className={`text-center ${i ? "md:border-l md:border-[#d0d9c5]" : ""}`}
             >
-              <p className="font-display text-4xl">{number}</p>
+              <p
+                className="font-display text-4xl"
+              >
+                {number}
+              </p>
               <p className="mt-2 text-xs text-muted-foreground">{label}</p>
             </div>
           ))}
         </div>
         <p className="mt-3 text-center text-[10px] text-muted-foreground">
-          Our community is getting ready to open. Member, business, and course
-          listings are coming soon.
+          {data.source === "supabase"
+            ? "Only approved and published community listings are counted."
+            : "Our community is getting ready to open. Live member counts are not connected yet."}
         </p>
       </Container>
       <Section>
@@ -284,27 +310,34 @@ export default async function Home() {
               Explore all hunar <ArrowRight size={16} />
             </Link>
           </div>
-          <div className="mt-8 flex flex-col items-center justify-center gap-5 rounded-2xl border border-dashed bg-white px-6 py-10 text-center sm:flex-row sm:text-left">
-            <span className="flex size-16 shrink-0 items-center justify-center rounded-full bg-secondary">
-              <Users size={28} strokeWidth={1.4} />
-            </span>
-            <div>
-              <h3 className="text-xl">The first chapter starts with you.</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Our latest approved members will appear here. Bring your hunar
-                to the community.
-              </p>
+          {data.recentMembers.length ? (
+            <RecentMembers
+              members={data.recentMembers}
+              categories={data.categories}
+            />
+          ) : (
+            <div className="mt-8 flex flex-col items-center justify-center gap-5 rounded-2xl border border-dashed bg-white px-6 py-10 text-center sm:flex-row sm:text-left">
+              <span className="flex size-16 shrink-0 items-center justify-center rounded-full bg-secondary">
+                <Users size={28} strokeWidth={1.4} />
+              </span>
+              <div>
+                <h3 className="text-xl">The first chapter starts with you.</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Our latest approved members will appear here. Bring your hunar
+                  to the community.
+                </p>
+              </div>
+              <Button
+                asChild
+                variant="outline"
+                className="h-11 shrink-0 sm:ml-auto"
+              >
+                <Link href="/signup">
+                  Be part of it <ArrowUpRight />
+                </Link>
+              </Button>
             </div>
-            <Button
-              asChild
-              variant="outline"
-              className="h-11 shrink-0 sm:ml-auto"
-            >
-              <Link href="/signup">
-                Be part of it <ArrowUpRight />
-              </Link>
-            </Button>
-          </div>
+          )}
         </Container>
       </Section>
       <Section id="faq" className="border-t pt-10">

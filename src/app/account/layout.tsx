@@ -3,7 +3,7 @@ import { requireUser } from "@/lib/auth";
 import { signOut } from "@/app/auth/actions";
 import { Container, Section } from "@/components/layout";
 import { Button } from "@/components/ui/button";
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Your account",
   robots: { index: false, follow: false },

@@ -1,15 +1,14 @@
-﻿# Hunar Souq — Phase 1
+# Hunar Souq - Phase 6
 
-**Current phase: Phase 2 — accounts and profiles.**
+**Current phase: Phase 6 — community courses.**
 
-Phase 2 adds Supabase authentication, protected account pages, a six-step profile editor, private image uploads, a status dashboard, and database-enforced ownership/review rules.
+Phase 6 adds instructor course authoring and review, public course discovery, free and Razorpay-paid enrollment, learner progress, reviews, completion certificates, and certificate verification. [Phase 6 setup and handoff](docs/phase-6.md) covers its database migration, payment credentials, webhook and current authoring boundaries.
 
-**Start with [the Phase 2 setup and handoff](docs/phase-2.md)** for the new migration, Google/email configuration, complete file inventory, security design, and live acceptance checklist. Apply both SQL migrations in order. The same three environment variables are used; there is no service-role key in the app.
+Apply SQL migrations 001 through 005 first, then apply `supabase/migrations/202609300006_courses.sql` once. [Phase 5](docs/phase-5.md) documents businesses and experience; [Phase 4](docs/phase-4.md) covers the member directory and private contact flow; [Phase 3](docs/phase-3.md) covers admin bootstrap and status email setup.
 
-Run `npm run test:unit` for schema and PostgreSQL security tests, in addition to the build, lint, typecheck, and browser checks below. Real email/OAuth/hosted Storage verification requires a configured Supabase project.
+`npm run lint` and `npm run typecheck` pass. The production build completed with a nonfatal Turbopack cache-write warning because the Windows drive is nearly full. Hosted RLS, Razorpay, database migrations, and signed-in learner flows still need live setup and review.
 
-The Phase 1 notes below are retained as implementation history; the Phase 2 handoff supersedes their account/profile limitations.
-
+The Phase 1 notes below are retained as implementation history; the Phase 6 handoff supersedes earlier phase limitations.
 ## Phase 1 foundation
 
 A warm, mobile-first community talent marketplace foundation. Built with Next.js 16 App Router, TypeScript, Tailwind CSS 4, shadcn/ui (Radix), and Supabase. Zod, React Hook Form, and their resolver are installed for forms.
@@ -80,4 +79,4 @@ The pottery photograph is sourced from [Unsplash](https://images.unsplash.com/ph
 
 Framework setup follows the [Next.js installation guide](https://nextjs.org/docs/app/getting-started/installation) and [Supabase SSR client guide](https://supabase.com/docs/guides/auth/server-side/creating-a-client).
 
-Phase 2 was authorized and implemented. Start Phase 3 only after the user says **continue**.
+Phase 5 was authorized and implemented. Start Phase 6 only after the user says **continue**.

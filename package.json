@@ -9,7 +9,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
-    "test:unit": "tsx --test tests/unit/validation.test.ts tests/unit/database.test.ts"
+    "test:unit": "tsx --test tests/unit/validation.test.ts tests/unit/database.test.ts tests/unit/admin-validation.test.ts tests/unit/admin-database.test.ts tests/unit/directory.test.ts"
   },
   "engines": {
     "node": ">=22.0.0"

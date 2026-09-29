@@ -1,0 +1,6 @@
+"use client";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { setCourseInstructor } from "@/app/admin/actions";
+export function InstructorAccess({userId,enabled,eligible,ownProfile}:{userId:string;enabled:boolean;eligible:boolean;ownProfile:boolean}){const router=useRouter();const[pending,start]=useTransition();const[message,setMessage]=useState("");return <section className="rounded-xl border bg-background p-5"><h2 className="text-lg">Course instructor access</h2><p className="mt-2 text-sm text-muted-foreground">Only approved, verified instructors can submit courses. Every course still needs admin review.</p>{!eligible&&!enabled&&<p className="mt-3 text-sm">Approve and verify this member before granting instructor access.</p>}<Button className="mt-4" variant={enabled?"outline":"default"} disabled={pending||ownProfile||(!eligible&&!enabled)} onClick={()=>start(async()=>{const r=await setCourseInstructor(userId,!enabled);setMessage(r.error??r.message??"");if(!r.error)router.refresh()})}>{enabled?"Remove instructor access":"Make instructor"}</Button>{ownProfile&&<p className="mt-2 text-xs">Another administrator must change your own access.</p>}<p role="status" className="mt-2 text-sm">{message}</p></section>}

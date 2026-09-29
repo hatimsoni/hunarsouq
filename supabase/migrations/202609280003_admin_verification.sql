@@ -65,7 +65,7 @@ create table public.verification_logs (
 );
 create index verification_logs_profile_idx on public.verification_logs(profile_id,created_at desc);
 alter table public.verification_logs enable row level security;
-revoke all on public.verification_logs from anon,authenticated;
+revoke all on public.verification_logs from public,anon,authenticated;
 grant select on public.verification_logs to authenticated;
 create policy "Admins read verification history" on public.verification_logs for select to authenticated using ((select public.is_admin()));
 
@@ -84,7 +84,7 @@ create table public.profile_status_emails (
 );
 create index profile_status_emails_pending_idx on public.profile_status_emails(created_at) where sent_at is null;
 alter table public.profile_status_emails enable row level security;
-revoke all on public.profile_status_emails from anon,authenticated;
+revoke all on public.profile_status_emails from public,anon,authenticated;
 grant select on public.profile_status_emails to authenticated;
 grant select,update on public.profile_status_emails to service_role;
 create policy "Admins inspect notification delivery" on public.profile_status_emails for select to authenticated using ((select public.is_admin()));
@@ -173,7 +173,9 @@ begin
   where id=event_id and sent_at is null and first_attempt_at < now()-interval '23 hours';
   return query update public.profile_status_emails set lease_token=gen_random_uuid(),locked_until=now()+interval '2 minutes',
     attempts=attempts+1,first_attempt_at=coalesce(first_attempt_at,now()),payload=coalesce(payload,email_payload)
-  where id=event_id and sent_at is null and not needs_attention and (locked_until is null or locked_until < now()) returning *;
+  where id=event_id and sent_at is null and not needs_attention and (locked_until is null or locked_until < now())
+    and not exists(select 1 from public.profile_status_emails earlier where earlier.profile_id=profile_status_emails.profile_id and earlier.sent_at is null and not earlier.needs_attention and (earlier.created_at,earlier.id)<(profile_status_emails.created_at,profile_status_emails.id))
+  returning *;
 end $$;
 revoke all on function public.claim_status_email(uuid,jsonb) from public,anon,authenticated;
 grant execute on function public.claim_status_email(uuid,jsonb) to service_role;

@@ -1,0 +1,6 @@
+"use client";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { reviewCourse } from "@/app/courses/actions";
+export function CourseReview({id}:{id:string}){const router=useRouter();const[pending,start]=useTransition();const[decision,setDecision]=useState("approve");const[note,setNote]=useState("");const[message,setMessage]=useState("");return <form className="mt-5 space-y-3 border-t pt-4" onSubmit={e=>{e.preventDefault();start(async()=>{const r=await reviewCourse(id,decision,note);setMessage(r.error??r.message??"");if(!r.error)router.refresh()})}}><label className="block text-sm">Decision<select className="mt-2 h-11 w-full rounded-md border bg-background px-3" value={decision} onChange={e=>setDecision(e.target.value)}><option value="approve">Approve and publish</option><option value="request_changes">Request changes</option><option value="reject">Reject</option></select></label><label className="block text-sm">Note for instructor<textarea className="mt-2 w-full rounded-md border bg-background p-3" rows={3} maxLength={2000} value={note} onChange={e=>setNote(e.target.value)}/></label><Button disabled={pending}>Record course decision</Button><p role="status" className="text-sm">{message}</p></form>}

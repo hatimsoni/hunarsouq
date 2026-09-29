@@ -1,0 +1,10 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { publicClient } from "@/lib/directory";
+import { Container, Section } from "@/components/layout";
+import { PrintCertificate } from "@/components/print-certificate";
+import { z } from "zod";
+const certificateSchema=z.object({certificate_code:z.string(),issued_at:z.string(),course_title:z.string(),learner_name:z.string(),learner_username:z.string().nullable()});
+export const dynamic="force-dynamic";
+export async function generateMetadata({params}:{params:Promise<{code:string}>}):Promise<Metadata>{return {title:`Verify certificate ${(await params).code}`,robots:{index:false,follow:false}}}
+export default async function VerifyCertificate({params}:{params:Promise<{code:string}>}){const {code}=await params;const db=publicClient();if(!db||!/^HS-[A-F0-9]{24}$/.test(code))notFound();const {data,error}=await db.rpc("verify_certificate",{target_code:code});const result=certificateSchema.safeParse(data);if(error||!result.success)notFound();const certificate=result.data;const issued=new Date(certificate.issued_at).toLocaleDateString("en-IN",{year:"numeric",month:"long",day:"numeric"});return <Section className="min-h-[75vh] bg-[#f3f3ec]"><Container><article className="mx-auto max-w-3xl border-[5px] border-[#d7b35a] bg-[#fffef9] p-7 text-center sm:p-14"><p className="eyebrow">Hunar Souq · Certificate of completion</p><h1 className="mt-8 text-4xl sm:text-5xl">A skill learned.<br/><span className="italic">A milestone earned.</span></h1><p className="mt-9 text-muted-foreground">This confirms that</p><p className="mt-2 font-display text-3xl">{certificate.learner_name}</p><p className="mx-auto mt-6 max-w-xl leading-7 text-muted-foreground">completed the course</p><p className="mt-2 text-2xl">{certificate.course_title}</p><p className="mt-7 text-sm text-muted-foreground">Issued {issued}</p><p className="mt-5 font-mono text-sm">{certificate.certificate_code}</p><PrintCertificate/></article></Container></Section>}

@@ -9,7 +9,9 @@ export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
   const protectedRoute =
     request.nextUrl.pathname === "/account" ||
-    request.nextUrl.pathname.startsWith("/account/") || request.nextUrl.pathname === '/admin' || request.nextUrl.pathname.startsWith('/admin/');
+    request.nextUrl.pathname.startsWith("/account/") ||
+    request.nextUrl.pathname === "/admin" ||
+    request.nextUrl.pathname.startsWith("/admin/");
   const login = () => {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
@@ -35,13 +37,13 @@ export async function proxy(request: NextRequest) {
   });
   const { data, error } = await supabase.auth.getUser();
   if (protectedRoute && (error || !data.user)) return login();
-  if (data.user && ['/login','/signup'].includes(request.nextUrl.pathname)) {
+  if (data.user && ["/login", "/signup"].includes(request.nextUrl.pathname)) {
     const target = request.nextUrl.clone();
-    target.pathname = safeNext(request.nextUrl.searchParams.get('next'));
-    target.search = '';
+    target.pathname = safeNext(request.nextUrl.searchParams.get("next"));
+    target.search = "";
     const result = NextResponse.redirect(target);
-    response.cookies.getAll().forEach(cookie => result.cookies.set(cookie));
-    result.headers.set('Cache-Control','private, no-store');
+    response.cookies.getAll().forEach((cookie) => result.cookies.set(cookie));
+    result.headers.set("Cache-Control", "private, no-store");
     return result;
   }
   response.headers.set("Cache-Control", "private, no-store");

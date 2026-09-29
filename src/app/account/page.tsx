@@ -6,7 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { VerifiedBadge } from "@/components/verified-badge";
 import type { Profile } from "@/lib/supabase/database.types";
+import {getOwnItems} from '@/lib/businesses';
+import {WorkManager} from '@/components/work-manager';
 const statuses: Record<Profile["status"], { label: string; copy: string }> = {
+  suspended: {
+    label: "Suspended",
+    copy: "Your profile is hidden and editing is paused. Please read the review note below. An administrator must restore the profile before you can make changes.",
+  },
   draft: {
     label: "Draft",
     copy: "Your story is taking shape. Finish your profile and send it to our team for review.",
@@ -32,6 +38,7 @@ export default async function Account() {
   const profile = await getOwnProfile();
   const previews = await mediaPreviews(profile);
   const status = statuses[profile.status];
+  const items=await getOwnItems();
   return (
     <div className="mx-auto max-w-4xl">
       <div className="mb-9">
@@ -88,23 +95,42 @@ export default async function Account() {
             </p>
           </div>
         )}
-        <Button asChild className="mt-7 h-12">
-          <Link href="/account/submit">
-            <PencilLine />
-            {profile.status === "draft"
-              ? "Complete your profile"
-              : "Edit your profile"}
-            <ArrowRight />
-          </Link>
-        </Button>
+        {profile.status !== "suspended" && (
+          <Button asChild className="mt-7 h-12">
+            <Link href="/account/submit">
+              <PencilLine />
+              {profile.status === "draft"
+                ? "Complete your profile"
+                : "Edit your profile"}
+              <ArrowRight />
+            </Link>
+          </Button>
+        )}
+        {profile.role === "admin" && profile.status !== "suspended" && (
+          <Button asChild variant="outline" className="mt-7 h-12 sm:ml-3">
+            <Link href="/admin">
+              Community administration
+              <ArrowRight />
+            </Link>
+          </Button>
+        )}
       </section>
       <div className="mt-6 flex items-start gap-3 rounded-xl border p-5 text-sm leading-6 text-muted-foreground">
         <ShieldCheck className="mt-1 size-5 shrink-0 text-primary" />
         <p>
-          Your contact details stay in your account. Only approved profile
-          details will appear in the public directory when it opens.
+          Your contact details are fetched only when a visitor opens Contact.
+          Only approved profiles appear in the public directory.
         </p>
       </div>
+      <section className="mt-8 rounded-2xl border bg-background p-6">
+        <h2 className="text-2xl">Keep learning</h2>
+        <p className="mt-2 text-sm text-muted-foreground">Your course enrollments and lesson progress live in one place.</p>
+        <Button asChild className="mt-4"><Link href="/account/courses">My courses <ArrowRight/></Link></Button>
+        {profile.role === "instructor" && profile.status === "approved" && profile.is_verified && (
+          <Button asChild variant="outline" className="ml-2 mt-4"><Link href="/account/teach">Teach a course <ArrowRight/></Link></Button>
+        )}
+      </section>
+      <WorkManager {...items} suspended={profile.status==='suspended'}/>
     </div>
   );
 }

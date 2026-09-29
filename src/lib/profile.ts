@@ -10,10 +10,18 @@ export const getOwnProfile = cache(async () => {
     .select("*")
     .eq("id", user.id)
     .single();
-  if (error || !data)
+  if (error || !data) {
+    // PostgREST returns PGRST205 when the profiles table is missing from the
+    // schema cache. Make the initial project setup issue actionable in the UI.
+    if (error?.code === "PGRST205" || error?.code === "42P01") {
+      throw new Error(
+        "Your account database is not set up yet. Apply the SQL migrations in supabase/migrations, then try again.",
+      );
+    }
     throw new Error(
       "Your profile could not be loaded. Check the Phase 2 migration and try again.",
     );
+  }
   return data;
 });
 export function profileToInput(profile: Profile): ProfileInput {

@@ -1,7 +1,8 @@
 import { defineConfig } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests",
-  testMatch: '**/*.spec.ts',
+  testMatch: "**/*.spec.ts",
+  testIgnore: "**/public/**",
   use: {
     baseURL: "http://localhost:3100",
     browserName: "chromium",

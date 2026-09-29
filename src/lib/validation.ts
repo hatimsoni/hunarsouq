@@ -82,7 +82,9 @@ const link = z.union([
       try {
         const url = new URL(value);
         return url.protocol === "https:" && !url.username && !url.password;
-      } catch { return false; }
+      } catch {
+        return false;
+      }
     }, "Use a secure https:// link without credentials."),
 ]);
 export const linksSchema = z.object({
@@ -181,6 +183,6 @@ export const emptyProfile: ProfileInput = {
   portfolio_images: [],
 };
 export function safeNext(value: string | null | undefined) {
-  if(value==='/admin'||value?.startsWith('/admin/')) return '/admin';
+  if (value === "/admin" || value?.startsWith("/admin/")) return "/admin";
   return value === "/account/submit" ? value : "/account";
 }

@@ -23,7 +23,7 @@ const questions = [
   ],
   [
     "Can I list a business or teach a course?",
-    "Yes. Business listings and courses are part of the upcoming platform. Approved instructors will be able to submit courses for review. These features are not open yet.",
+    "Yes. Members can list businesses, and verified instructors can submit courses for human review before publication.",
   ],
 ];
 export function FAQ() {

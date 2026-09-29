@@ -4,6 +4,11 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Sprout } from "lucide-react";
 import { Container, Section } from "@/components/layout";
 import { Button } from "@/components/ui/button";
+import { getPublicProfile } from "@/lib/directory";
+import { PublicProfile } from "@/components/public-profile";
+import { getPublicBusiness } from "@/lib/businesses";
+import { PublicBusinessDetail } from "@/components/public-business-detail";
+export const dynamic = "force-dynamic";
 
 const pages: Record<
   string,
@@ -36,7 +41,7 @@ const pages: Record<
     sections: [
       [
         "What this preview collects",
-        "When account services are configured, we store your email and authentication details with Supabase, along with the profile information and images you choose to submit. Draft and pending profiles are private. No analytics or payments have been added. Hosting providers may process standard request logs.",
+        "When account services are configured, we store your email and authentication details with Supabase, along with the profile information and images you choose to submit. Draft and pending profiles are private. Paid course checkout is processed by Razorpay when payment credentials are configured. Hosting providers may process standard request logs.",
       ],
       [
         "Our planned approach",
@@ -52,7 +57,7 @@ const pages: Record<
     sections: [
       [
         "This preview",
-        "Hunar Souq is being built in stages. Accounts and profile submissions are available when account services are connected. Public listings, learning, and payments are not yet open.",
+        "Hunar Souq is being built in stages. Profiles, business listings, and community courses are reviewed before publication. Paid courses use Razorpay checkout when configured; enrollment is confirmed by a verified payment notification.",
       ],
       [
         "Community expectations",
@@ -75,7 +80,7 @@ const pages: Record<
       ],
       [
         "Build trust",
-        "Be clear about availability, costs, and what you can deliver. Profiles, businesses, and courses will be reviewed before publication. Reporting and moderation tools will arrive with public listings.",
+        "Be clear about availability, costs, and what you can deliver. Public profiles are reviewed before publication. Use Report this profile on a member page to flag a concern for the review team.",
       ],
     ],
   },
@@ -94,31 +99,9 @@ const pages: Record<
       ],
     ],
   },
-  hunar: {
-    title: "Find your kind of talent.",
-    intro: "The Hunar directory is coming soon.",
-    preview: true,
-    sections: [
-      [
-        "A community taking shape",
-        "Our first reviewed profiles will appear here when the directory opens. In the meantime, explore the skill categories on our homepage.",
-      ],
-    ],
-  },
-  business: {
-    title: "Small businesses. Big heart.",
-    intro: "The business directory is coming soon.",
-    preview: true,
-    sections: [
-      [
-        "Made for local enterprise",
-        "Discover community businesses once owner profiles and business listings have completed human review.",
-      ],
-    ],
-  },
   courses: {
     title: "Make room for a new skill.",
-    intro: "Community courses are coming soon.",
+    intro: "Make room for a new skill.",
     preview: true,
     sections: [
       [
@@ -128,9 +111,6 @@ const pages: Record<
     ],
   },
 };
-export function generateStaticParams() {
-  return Object.keys(pages).map((page) => ({ page }));
-}
 export async function generateMetadata({
   params,
 }: {
@@ -138,6 +118,41 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const key = (await params).page;
   const entry = Object.hasOwn(pages, key) ? pages[key] : undefined;
+  if (!entry) {
+    const profile = await getPublicProfile(key);
+    if (!profile) {
+      const business = await getPublicBusiness(key);
+      if (!business)
+        return {
+          title: "Listing not found",
+          robots: { index: false, follow: false },
+        };
+      const title = `${business.name} — ${business.city}`;
+      return {
+        title,
+        description: business.description.slice(0, 160),
+        alternates: { canonical: `/business/${business.slug}` },
+        openGraph: {
+          title,
+          description: business.description.slice(0, 160),
+          images: [`/og?business=${business.slug}`],
+        },
+        twitter: { card: "summary_large_image" },
+      };
+    }
+    const title = `${profile.full_name} — ${profile.city}`;
+    return {
+      title,
+      description: profile.bio.slice(0, 160),
+      alternates: { canonical: `/${profile.username}` },
+      openGraph: {
+        title,
+        description: profile.bio.slice(0, 160),
+        images: [`/og?username=${profile.username}`],
+      },
+      twitter: { card: "summary_large_image" },
+    };
+  }
   return {
     title: entry?.title || "Page not found",
     description: entry?.intro,
@@ -151,7 +166,13 @@ export default async function InformationPage({
 }) {
   const key = (await params).page;
   const entry = Object.hasOwn(pages, key) ? pages[key] : undefined;
-  if (!entry) notFound();
+  if (!entry) {
+    const profile = await getPublicProfile(key);
+    if (profile) return <PublicProfile profile={profile} />;
+    const business = await getPublicBusiness(key);
+    if (!business) notFound();
+    return <PublicBusinessDetail business={business} />;
+  }
   return (
     <Section className="min-h-[65vh]">
       <Container className="max-w-3xl">

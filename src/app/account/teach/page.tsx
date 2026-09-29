@@ -1,0 +1,9 @@
+import Link from "next/link";
+import { requireUser } from "@/lib/auth";
+import { getInstructorCourses } from "@/lib/courses";
+import { Button } from "@/components/ui/button";
+export const dynamic="force-dynamic";
+export default async function Teach(){const {supabase,user}=await requireUser();const {data:profile}=await supabase.from("profiles").select("role,status,is_verified").eq("id",user.id).maybeSingle();const courses=await getInstructorCourses();
+ if(profile?.role!=="instructor"||profile.status!=="approved"||!profile.is_verified)return <div className="mx-auto max-w-2xl rounded-xl border bg-background p-7"><h1 className="text-3xl">Teach with Hunar Souq</h1><p className="mt-3 text-sm leading-6 text-muted-foreground">Course creation is available to members marked as instructors after their profile is approved and verified. Contact the review team to request instructor access.</p><Button asChild variant="outline" className="mt-5"><Link href="/account">Back to account</Link></Button></div>;
+ return <div className="mx-auto max-w-4xl"><div className="flex flex-wrap items-end justify-between gap-4"><div><p className="eyebrow mb-2">Share your knowledge</p><h1 className="text-4xl">Your courses</h1></div><Button asChild><Link href="/account/teach/new">Create a course</Link></Button></div><div className="mt-6 space-y-3">{courses.map(c=><article key={c.id} className="flex flex-wrap items-center justify-between gap-4 rounded-xl border bg-background p-5"><div><h2 className="text-xl">{c.title}</h2><p className="mt-1 text-sm text-muted-foreground">{c.status.replaceAll("_"," ")}{c.review_note?` · ${c.review_note}`:""}</p></div><Button asChild variant="outline"><Link href={`/account/teach/${c.id}`}>Edit course</Link></Button></article>)}{!courses.length&&<p className="rounded-xl border bg-background p-5 text-sm text-muted-foreground">You have not created any courses yet.</p>}</div></div>;
+}

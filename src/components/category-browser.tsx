@@ -46,7 +46,13 @@ const icons: Record<string, LucideIcon> = {
   Camera,
   Gem,
 };
-export function CategoryBrowser({ categories }: { categories: Category[] }) {
+export function CategoryBrowser({
+  categories,
+  memberCounts = {},
+}: {
+  categories: Category[];
+  memberCounts?: Record<string, number>;
+}) {
   const [search, setSearch] = useState("");
   const [all, setAll] = useState(false);
   const filtered = categories.filter((c) =>
@@ -100,7 +106,9 @@ export function CategoryBrowser({ categories }: { categories: Category[] }) {
                   {category.description}
                 </p>
                 <p className="mt-4 border-t pt-3 text-[11px] text-muted-foreground">
-                  0 members · Be the first
+                  {memberCounts[category.id] === undefined
+                    ? "Member count coming soon"
+                    : `${memberCounts[category.id]} member${memberCounts[category.id] === 1 ? "" : "s"}${memberCounts[category.id] === 0 ? " · Be the first" : ""}`}
                 </p>
               </Card>
             </Link>
